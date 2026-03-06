@@ -7,7 +7,8 @@ This repository is a minimal Next.js 16 (App Router) starter with React 19, Type
 ## 1. Current Scope
 - Purpose: baseline UI scaffold for future SaaS features.
 - No authentication, database, or API layer is present.
-- No env vars are required yet; `env.example` does not exist.
+- **NEW: AI FAQ Generator (Faqlio) — provides FAQ generation from product description using OpenAI API**
+- To enable AI FAQ feature, set `OPENAI_API_KEY` as described below (see "Environment & Secrets")
 - First feature rule: ship the first feature/update directly in `app/page.tsx` (the main page) before introducing new routes or structure. Rebrand the entire page as per the request, including header and footer sections.
 - Current landing: Panda-themed orange palette, responsive layout with wrapping buttons, and constrained center width (up to ~1600px) while remaining mobile-friendly.
 
@@ -21,7 +22,7 @@ This repository is a minimal Next.js 16 (App Router) starter with React 19, Type
 ```
 app/
   layout.tsx        # Root layout, loads fonts, applies globals
-  page.tsx          # Public landing page (server component)
+  page.tsx          # Public landing page (server component, now with Faqlio AI FAQ Generator)
   globals.css       # Global styles; Tailwind entrypoint
 public/             # Static assets (logos/icons)
 scripts/            # Ops helpers (minimal placeholders)
@@ -38,32 +39,46 @@ package.json        # Scripts and dependencies
 package-lock.json   # Locked dependency tree
 FILES.md            # Structural index
 RULES.md            # Change boundaries (boilerplate)
+env.example         # Add your OpenAI API key here for FAQ generation
 ```
 
-## 4. Install & Run
+## 4. Install &amp; Run
 ```bash
 npm install
+# Add .env.local with your OpenAI key (see env.example)
+cp env.example .env.local  # then fill in your OPENAI_API_KEY
+
 npm run dev   # starts Next.js on localhost:3000
 npm run lint  # ESLint
 npm run build # production build
 ```
 
-## 5. Routing & Components
+## 5. Routing &amp; Components
 - Public landing page: `app/page.tsx`.
 - No route groups exist yet. When adding authenticated/dashboard areas, create `app/(dashboard)/...` and reuse shared layouts there (see RULES.md).
-- Keep components server-side by default; add `"use client"` only when required by client hooks/state.
+- Keep components server-side by default; add `&quot;use client&quot;` only when required by client hooks/state.
 
 ## 6. Styling
-- Tailwind is enabled via `app/globals.css` (`@import "tailwindcss";`). There is no standalone `tailwind.config` yet; add one only if needed.
+- Tailwind is enabled via `app/globals.css` (`@import &quot;tailwindcss&quot;;`). There is no standalone `tailwind.config` yet; add one only if needed.
 - Limit global styles; prefer component- or route-scoped styles.
 - Fonts are loaded through `next/font` (Geist). Keep overrides minimal.
 - Landing page uses Panda orange (#FB7232) accents, card-based feature highlights, and a gradient hero; buttons and menus wrap on small viewports.
 
-## 7. Environment & Secrets
-- No env vars are defined. If you need configuration, first add `env.example` with keys and descriptions, then consume via `process.env.<KEY>`. Never commit secrets.
+## 7. Environment &amp; Secrets
 
-## 8. Data & Backend (Absent)
-- No Prisma/ORM, no API routes, no database connections. When introducing data access, place server-only helpers under `lib/` and add API routes or server actions within `app/`. Document new contracts in FILES.md and RULES.md.
+**AI FAQ Generator requires an OpenAI API key:**
+
+- Copy `env.example` to `.env.local` and fill in your key:
+  ```
+  OPENAI_API_KEY=sk-...
+  ```
+- FAQ generation will NOT work unless this is set. Get your key from https://platform.openai.com/api-keys.
+- Never commit `.env.local` to source control.
+
+## 8. Data &amp; Backend (Absent)
+
+- No Prisma/ORM; no custom API routes or database connections beyond server action for AI FAQ generator.
+- If adding further data access, place server-only helpers under `lib/` and add API routes or server actions within `app/`. Document new contracts in FILES.md and RULES.md.
 
 ## 9. Testing (Not Present)
 - No tests are included. If adding tests, prefer:
