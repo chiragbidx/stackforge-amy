@@ -1,60 +1,6 @@
 "use client";
 import { useState } from "react";
-
-async function generateFAQsFromDescription(formData: FormData) {
-  "use server";
-  const description = formData.get("description") as string;
-  if (!description || description.trim().length < 12) {
-    return { faqs: [], error: "Provide a longer product description." };
-  }
-
-  // Use OpenAI API — expects OPENAI_API_KEY in env
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return { faqs: [], error: "OPENAI_API_KEY not set. See env.example." };
-
-  const prompt = `Given the following SaaS product description, generate a list of the top 6 most likely FAQs with brief, helpful answers. Use bullet-point pairs (Q: ... A: ...), just as a user would expect for a landing page FAQ.\n\nProduct Description:\n${description}\n\nFAQs:\n`;
-
-  try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 650,
-        temperature: 0.35,
-      }),
-    });
-
-    if (!response.ok) {
-      return { faqs: [], error: "Failed to generate FAQs. Try again later." };
-    }
-
-    const data = await response.json();
-    const output = data.choices[0]?.message?.content as string | undefined;
-    if (!output) return { faqs: [], error: "No response from AI." };
-
-    // Parse lines formatted as Q: ... A: ...
-    const faqs = output
-      .split(/\r?\n/)
-      .filter(Boolean)
-      .reduce<{ q: string; a: string }[]>((arr, line) => {
-        if (line.startsWith("Q:")) {
-          arr.push({ q: line.replace(/^Q:\s*/, ""), a: "" });
-        } else if (line.startsWith("A:") && arr.length) {
-          arr[arr.length - 1].a = line.replace(/^A:\s*/, "");
-        }
-        return arr;
-      }, []);
-
-    return { faqs, error: "" };
-  } catch (e) {
-    return { faqs: [], error: "Unexpected error. Please try again." };
-  }
-}
+import { generateFAQsFromDescription } from "./generateFAQsFromDescription";
 
 export default function Home() {
   const [faqs, setFaqs] = useState<{ q: string; a: string }[]>([]);
