@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 
 async function generateFAQsFromDescription(formData: FormData) {
@@ -56,7 +57,6 @@ async function generateFAQsFromDescription(formData: FormData) {
 }
 
 export default function Home() {
-  "use client";
   const [faqs, setFaqs] = useState<{ q: string; a: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
